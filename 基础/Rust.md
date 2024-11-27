@@ -1,7 +1,7 @@
 # Rust
 
 >
->`# TODO Rust编程语言入门教程 P33`
+>``
 >
 
 ## 基础介绍
@@ -19,7 +19,7 @@ rust工具链安装器
 
 ```yaml
 rustup:
-    check: 检查工具更新
+    check: # 检查工具更新
     component:
     doc: 打开本地文档
     default: 设置默认工具
@@ -33,7 +33,7 @@ rustup:
     toolchain: 已安装的工具链
         install:
         list:
-    update: 更新rust工具
+    update: # 更新rust工具
 ```
 
 
@@ -43,6 +43,11 @@ rustc:
     --version:
 ```
 
+rust编译器
+
+
+
+
 
 ### cargo
 
@@ -50,7 +55,10 @@ rust包管理工具
 
 ```yaml
 cargo:
-    add: 添加第三方包
+    -h:
+    --help:
+    --version:
+    add: # 添加第三方包
     bench: 跑测试
     build: 打包
         --release: 
@@ -59,15 +67,12 @@ cargo:
     help:
     init: 初始化
     install:
-    new: 新建cargo包
+    new: # 新建cargo包(项目)
     publish: 发布包
     remove: 移除包
     run: 运行
     uninstall:
     update: 更新包
-    -h:
-    --help:
-    --version:
 ```
 
 cargo添加的依赖存放在`%CARGO_HOME%/registry`下
@@ -75,18 +80,13 @@ cargo添加的依赖存放在`%CARGO_HOME%/registry`下
 
 
 #### Cargo.toml
-```toml
-# 包信息
-[package]
-authors = ["作者"]
-edition="rust版本"
-name="名称"
-version="版本：2018|"
-
-
-
-# 依赖
-[dependencies] 
+```yaml
+package:
+    authors:
+    edition:
+    name:
+    version:
+dependencies: 
 ```
 
 
@@ -97,6 +97,10 @@ version="版本：2018|"
 ## 核心内容
 ```yaml
 std:
+    __prelude:
+        String:
+        panic:
+        println: # 打印(宏)
     cmp:
         Ordering:
             Equal:
@@ -109,14 +113,14 @@ std:
     fs:
     io:
         Result:
-            expect():
+            expect(): # 打印异常细腻些
             is_ok():
-            unwrap(): 直接取结果
+            unwrap(): # 直接取结果
             Err():
             OK():
         Stdin:
             read_line():
-        stdin(): 获取输入流
+        stdin(): # 获取输入流
     option:
         Option:
             None():
@@ -124,34 +128,39 @@ std:
     string:
         String:
             clone():
-            from():
+            cmp(): # 字符串比较
+            from(): # 根据字符串常量创建字符串
             len():
-            new():
-            parse():
+            new(): # 新建字符串
+            parse(): # 字符串解析
             push_str():
             trim():
     vec:
         Vec:
             append():
-    panic:
-    println: 打印(宏)
+            new():
 
 proc_macro:
-    Group: 代码段
-    Ident: 标识符
-    Literal: 字面量
-    Punct: 标点符号
+    Group: # 代码段
+    Ident: # 标识符
+    Literal: # 字面量
+    Punct: # 标点符号
     TokenStream:
         default():
         from():
         read_to_string():
     TokenTree:
+rand:
+    Rng:
+        rand:
+            thread_rng():
+                get_range():
 syn:
     ItemFn:
     parse_marco_input:
 
 quote:
-    quote: 宏
+    quote: # 宏
 
 ```
 
@@ -160,7 +169,6 @@ quote:
 ```yaml
 type:
     bool:
-    ---
     i32:
     i64:
     isize:
@@ -168,26 +176,19 @@ type:
     u32:
     u64:
     usize:
-    ---
     f32:
     f64:
-    ---
     char:
-    ---
     str: 字符串切片
-    ---
     Tuple: 元组
         0:
         1:
         2:
-    ---
     Array: 数组
         [type; size]
         iter():
-    ---
     Range: 范围
         rev():
-    ---
     Slice: 切片
 ```
 
@@ -195,6 +196,20 @@ type:
 `let`定义的变量默认是不可修改的，加上`mut`才是可修改的，`const`定义常量
 
 可以使用相同的名字声明新的变量，新的变量会shadow之前的同名变量
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 #### String
@@ -214,7 +229,7 @@ String与&str都是指向str的指针，String包含：指针、长度、容量�
 
 
 
-#### 切片
+#### Slice
 
 `[T]`: 动态尺寸类型
 
@@ -227,7 +242,9 @@ String与&str都是指向str的指针，String包含：指针、长度、容量�
 
 数组切片
 
-#### 枚举
+
+
+#### Enum
 ```rust
 enum Color {
     RED(type),
@@ -240,6 +257,11 @@ Color::RED
 枚举的每种字面量都可以定义不同类型（可利用enum实现类型别名），利于match解构和if let解构
 
 枚举也可定义方法（impl）
+
+
+#### Vector
+
+堆上生成
 
 
 
@@ -318,6 +340,10 @@ struct赋值默认也是会发生移动Move的
 
 
 
+
+#### trait
+
+类似其它语言的接口
 
 
 
@@ -500,6 +526,7 @@ Rust宏：声明宏、过程宏
 ### Concurrency
 
 
+#### Async
 
 
 
