@@ -1,7 +1,7 @@
 # Rust
 
 >
->``
+>`2024 Rust现代实用教程：P8`
 >
 
 ## 基础介绍
@@ -14,34 +14,45 @@ rustup镜像环境变量：`RUSTUP_DIST_SERVER`、`RUSTUP_UPDATE_ROOT`
 
 
 ### rustup
-
-rust工具链安装器
-
 ```yaml
 rustup:
-    check: 检查工具更新
-    component:
-    doc: 打开本地文档
-    default: 设置默认工具
+    check: # 检查工具更新
+    component: # 功能组件管理
+        add:
+            rustfmt:
+    doc: # 打开本地文档
+    default: # 设置默认工具(rust版本管理)
+        nightly:
+        stable:
     help:
     run:
-    self: 修改已安装工具
+    self: # 修改已安装工具
         update:
-        uninstall:
-    show: 显示已安装的工具
+        uninstall: # 卸载
+    show: # 显示已安装的工具
     target:
-    toolchain: 已安装的工具链
+    toolchain: # 已安装的工具链
         install:
         list:
-    update: 更新rust工具
+    update: # 更新rust工具
 ```
+
+rust工具链安装器
 
 
 ### rustc
 ```yaml
 rustc:
+    -o:
+    --crate-type:
+        lib:
     --version:
 ```
+
+rust编译器
+
+
+
 
 
 ### cargo
@@ -50,24 +61,28 @@ rust包管理工具
 
 ```yaml
 cargo:
-    add: 添加第三方包
-    bench: 跑测试
-    build: 打包
-        --release: 
-    check: 检查代码
-    clean:
-    help:
-    init: 初始化
-    install:
-    new: 新建cargo包
-    publish: 发布包
-    remove: 移除包
-    run: 运行
-    uninstall:
-    update: 更新包
     -h:
     --help:
     --version:
+    add: # 添加第三方包
+        --build:
+        --dev:
+    bench: # 测试
+    build: # 打包
+        --release: 
+    check: # 检查代码
+    clean:
+    help:
+    init: # 初始化
+    install: # 打包到本地仓库
+    new: # 新建cargo包(项目)
+        --lib:
+    publish: # 发布包
+    remove: # 移除包
+    run: # 运行
+    test: # 运行测试代码
+    uninstall:
+    update: # 更新包
 ```
 
 cargo添加的依赖存放在`%CARGO_HOME%/registry`下
@@ -75,18 +90,15 @@ cargo添加的依赖存放在`%CARGO_HOME%/registry`下
 
 
 #### Cargo.toml
-```toml
-# 包信息
-[package]
-authors = ["作者"]
-edition="rust版本"
-name="名称"
-version="版本：2018|"
-
-
-
-# 依赖
-[dependencies] 
+```yaml
+build-dependencies:
+dependencies: 
+dev-dependencies:
+package:
+    authors:
+    edition:
+    name:
+    version:
 ```
 
 
@@ -96,7 +108,34 @@ version="版本：2018|"
 
 ## 核心内容
 ```yaml
+alloc:
+core:
+proc_macro:
+    Group: # 代码段
+    Ident: # 标识符
+    Literal: # 字面量
+    Punct: # 标点符号
+    TokenStream:
+        default():
+        from():
+        read_to_string():
+    TokenTree:
 std:
+    _prelude: # 预加载
+        u32:
+            MAX:
+            MIN:
+        Array:
+            len():
+        String:
+            from(): # 创建字符串
+        panic!():
+        print!():
+        println!(): # 打印(宏)
+    alloc:
+    any:
+    array:
+    cell:
     cmp:
         Ordering:
             Equal:
@@ -106,95 +145,107 @@ std:
         HashMap:
             insert():
             new():
+    convert:
+    default:
+    env:
+    error:
+    fmt:
     fs:
+    future:
+    hash:
     io:
         Result:
-            expect():
+            expect(): # 打印异常细腻些
             is_ok():
-            unwrap(): 直接取结果
+            unwrap(): # 直接取结果
             Err():
             OK():
         Stdin:
             read_line():
-        stdin(): 获取输入流
+        stdin(): # 获取输入流
+    iter:
+    mem:
+        sizeof(): # 内存大小
+    net:
+    ops:
     option:
         Option:
             None():
             Some():
+    os:
+    path:
+    process:
+    result:
+    slice:
+    str:
     string:
         String:
             clone():
-            from():
+            cmp(): # 字符串比较
+            from(): # 根据字符串常量创建字符串
             len():
-            new():
-            parse():
+            new(): # 新建字符串
+            parse(): # 字符串解析
             push_str():
             trim():
+    sync:
+    task:
+    thread:
+    time:
     vec:
         Vec:
             append():
-    panic:
-    println: 打印(宏)
+            new():
 
-proc_macro:
-    Group: 代码段
-    Ident: 标识符
-    Literal: 字面量
-    Punct: 标点符号
-    TokenStream:
-        default():
-        from():
-        read_to_string():
-    TokenTree:
-syn:
-    ItemFn:
-    parse_marco_input:
-
-quote:
-    quote: 宏
-
+test:
 ```
 
 
 ### 数据类型
 ```yaml
 type:
+    array:
     bool:
-    ---
-    i32:
+    char:
+    f32:
+    f64: # 浮点数默认
+    fn: # 函数
+    i32: # 整形默认
     i64:
     isize:
+    pointer:
+    reference:
+    slice:
+    str: # 字符串切片
+    tuple: # 元组
+        .0:
+        .1:
+        .2:
     u8:
     u32:
     u64:
+    unit:
     usize:
-    ---
-    f32:
-    f64:
-    ---
-    char:
-    ---
-    str: 字符串切片
-    ---
-    Tuple: 元组
-        0:
-        1:
-        2:
-    ---
-    Array: 数组
-        [type; size]
-        iter():
-    ---
-    Range: 范围
-        rev():
-    ---
-    Slice: 切片
 ```
 
 
-`let`定义的变量默认是不可修改的，加上`mut`才是可修改的，`const`定义常量
+`let`定义的变量默认是不可修改的，加上`mut`才是可修改的，`const`定义常量，`static`静态变量
 
 可以使用相同的名字声明新的变量，新的变量会shadow之前的同名变量
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 #### String
@@ -206,6 +257,11 @@ pub struct String {
 
 ![rust字符串内存模型](../assets/rust字符串内存模型.png)
 
+
+引用类型Move
+
+
+
 String是str的指针，并拥有str的所有权，可以通过它修改str的值
 
 `str`等效于`[u8]`
@@ -214,7 +270,24 @@ String与&str都是指向str的指针，String包含：指针、长度、容量�
 
 
 
-#### 切片
+#### Array
+
+[type; size]
+
+固定长度数组
+
+值类型Copy  
+
+
+#### Tuple
+
+
+值类型Copy
+
+
+
+
+#### Slice
 
 `[T]`: 动态尺寸类型
 
@@ -227,7 +300,9 @@ String与&str都是指向str的指针，String包含：指针、长度、容量�
 
 数组切片
 
-#### 枚举
+
+
+#### Enum
 ```rust
 enum Color {
     RED(type),
@@ -242,9 +317,21 @@ Color::RED
 枚举也可定义方法（impl）
 
 
+#### Vector
+
+堆上生成
+
+
 
 
 ### 控制流程
+```yaml
+:
+    as: # 强制类型转换
+    mut: # 可变定义
+    for ... in ...:
+    unsafe ...: 
+```
 
 - match
 - loop
@@ -273,15 +360,23 @@ match通常和枚举一块使用
 
 
 
-#### 函数
+
+
+
+#### 异常处理
+
+
+
+
+
+### 函数
+
+
 
 `fn`定义函数
 
 Statement语句最后一行的值默认为返回值
 
-
-
-#### 异常处理
 
 
 
@@ -314,10 +409,17 @@ Tuple Struct
 struct Color(i32, i32, i32);
 ```
 
+引用类型Move
 struct赋值默认也是会发生移动Move的
 
 
 
+
+
+
+#### trait
+
+类似其它语言的接口
 
 
 
@@ -390,6 +492,10 @@ Copy trait、Drop trait
 
 
 ### Generic
+
+
+
+
 
 
 
@@ -500,6 +606,7 @@ Rust宏：声明宏、过程宏
 ### Concurrency
 
 
+#### Async
 
 
 
