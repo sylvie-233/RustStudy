@@ -1,6 +1,8 @@
 # Rust
 
 >
+>`Rust官方文档：https://doc.rust-lang.org/book/`
+>
 >`2024 Rust现代实用教程：P8`
 >
 
