@@ -1,9 +1,9 @@
 # Rust
 
 >
+>`Rust官方API文档：https://doc.rust-lang.org/std/index.html`
 >`Rust官方文档：https://doc.rust-lang.org/book/`
 >
->`Rust官方API文档：https://doc.rust-lang.org/std/index.html`
 >
 
 ## 基础介绍
@@ -124,7 +124,7 @@ proc_macro:
         read_to_string():
     TokenTree:
 std: # 核心包
-    __prelude:
+    __prelude: # 预加载模块
         panic!():
         print!():
         println!(): # 打印(宏)
@@ -137,9 +137,11 @@ std: # 核心包
             Equal:
             Great:
             Less:
-    collections:
-        HashMap:
+    collections: # 集合
+        HashMap: # 哈希表
             insert():
+            new():
+        Vec: # 
             new():
     convert:
     default:
@@ -164,15 +166,19 @@ std: # 核心包
         sizeof(): # 内存大小
     net:
     ops:
-    option:
-        Option:
-            None():
-            Some():
+    option: # 可空
+        Option: # 可空枚举
+            None:
+            Some(T): # 有值
     os:
     path:
     prelude: # 预加载模块
     process:
-    result:
+    result: # 结果
+        Result: # 结果枚举
+            Err(E):
+            Ok(T):
+            is_ok():
     slice:
     str:
     string:
@@ -224,9 +230,12 @@ DataTypes:
     usize:
 ```
 
+`let`:
+`let mut`:
+`const`: 定义常量
+`static`: 静态变量
 
-`let`定义的变量默认是不可修改的，加上`mut`才是可修改的，`const`定义常量，`static`静态变量
-
+变量默认是不可修改的
 可以使用相同的名字声明新的变量，新的变量会shadow之前的同名变量
 
 
@@ -251,31 +260,31 @@ pub struct String {
 }
 ```
 
-![rust字符串内存模型](../assets/rust字符串内存模型.png)
-
+字符串
 
 引用类型Move
 
 
-
 String是str的指针，并拥有str的所有权，可以通过它修改str的值
-
 `str`等效于`[u8]`
-
 String与&str都是指向str的指针，String包含：指针、长度、容量，而&str只包含：指针、长度
 
+![rust字符串内存模型](../assets/rust字符串内存模型.png)
 
 
 #### Array
 
-[type; size]
 
 固定长度数组
+[type; size]
+
 
 值类型Copy  
 
 
 #### Tuple
+
+元组
 
 
 值类型Copy
@@ -285,17 +294,33 @@ String与&str都是指向str的指针，String包含：指针、长度、容量�
 
 #### Slice
 
-`[T]`: 动态尺寸类型
 
-切片不持有所有权，切片不一定代表引用
+切片不持有所有权
+
 
 字符串切片的不可变引用`&str`：指向字符串一部分内容的引用
-
 字符串字面值也是字符串切片
-
-
 数组切片
 
+
+
+
+
+
+#### Vec
+
+动态数组
+
+引用类型Move
+
+
+
+#### HashMap
+
+
+哈希表
+
+引用类型Move
 
 
 #### Enum
@@ -308,33 +333,21 @@ enum Color {
 Color::RED
 ```
 
-枚举的每种字面量都可以定义不同类型（可利用enum实现类型别名），利于match解构和if let解构
+枚举
 
-枚举也可定义方法（impl）
-
-
-#### Vector
-
-堆上生成
-
+利于match解构和if let解构
+枚举也可定义方法impl
 
 
 
 ### Control Flow
 ```yaml
-:
+ControlFlow:
     as: # 强制类型转换
     mut: # 可变定义
     for ... in ...:
     unsafe ...: 
 ```
-
-- match
-- loop
-- while
-- for/ for in
-- if let
-
 
 Result解决了一部分异常处理的逻辑
 
@@ -396,17 +409,23 @@ impl User {
 }
 ```
 
-struct方法定义写在外面
+结构体
 
-struct结构：`..struct实例`
+引用类型Move
 
-Tuple Struct
+struct赋值默认也是会发生移动Move的
+struct方法定义写在外面impl
+
+支持解构
+
+
+#### Tuple Struct
 ```rust
 struct Color(i32, i32, i32);
 ```
 
-引用类型Move
-struct赋值默认也是会发生移动Move的
+元组结构体
+
 
 
 
@@ -415,7 +434,7 @@ struct赋值默认也是会发生移动Move的
 
 #### trait
 
-类似其它语言的接口
+特质、类似其它语言的接口
 
 
 
@@ -440,7 +459,7 @@ Copy trait、Drop trait
 
 变量走出作用域时，会调用drop函数
 
-引用`Reference`：&；引用传递不会丢失所有权，把引用作为函数参数的行为就叫做借用`Borrow`
+引用`Reference`&；引用传递不会丢失所有权，把引用作为函数参数的行为就叫做借用`Borrow`
 
 `&mut`在特定作用域内，对某一块数据只能有一个可变引用；不可以同时拥有一个可变引用和一个不可变引用
 
@@ -472,7 +491,7 @@ Copy trait、Drop trait
 - 每一个引用参数都会获得独自的生命周期
 - 若只有一个输入生命周期(函数参数中只有一个引用类型)，那么该生命周期会被赋给所有的输出生命周期，也就是所有返回值的生命周期都等于该输入生命周期
 
-**struct自己的生命周期可以比属性引用的生命周期短**
+struct自己的生命周期可以比属性引用的生命周期短
 
 
 
