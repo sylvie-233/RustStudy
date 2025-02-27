@@ -3,7 +3,7 @@
 >
 >`Rust官方文档：https://doc.rust-lang.org/book/`
 >
->`2024 Rust现代实用教程：P8`
+>`Rust官方API文档：https://doc.rust-lang.org/std/index.html`
 >
 
 ## 基础介绍
@@ -113,6 +113,7 @@ package:
 alloc:
 core:
 proc_macro:
+    token_stream:
     Group: # 代码段
     Ident: # 标识符
     Literal: # 字面量
@@ -122,15 +123,8 @@ proc_macro:
         from():
         read_to_string():
     TokenTree:
-std:
-    _prelude: # 预加载
-        u32:
-            MAX:
-            MIN:
-        Array:
-            len():
-        String:
-            from(): # 创建字符串
+std: # 核心包
+    __prelude:
         panic!():
         print!():
         println!(): # 打印(宏)
@@ -176,6 +170,7 @@ std:
             Some():
     os:
     path:
+    prelude: # 预加载模块
     process:
     result:
     slice:
@@ -198,15 +193,14 @@ std:
         Vec:
             append():
             new():
-
-test:
+test: # 测试库
 ```
 
 
-### 数据类型
+### Data Types
 ```yaml
-type:
-    array:
+DataTypes:
+    array: # 数组类型
     bool:
     char:
     f32:
@@ -326,7 +320,7 @@ Color::RED
 
 
 
-### 控制流程
+### Control Flow
 ```yaml
 :
     as: # 强制类型转换
@@ -365,13 +359,13 @@ match通常和枚举一块使用
 
 
 
-#### 异常处理
+#### exception
 
 
 
 
 
-### 函数
+### Function
 
 
 
