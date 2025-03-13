@@ -15,7 +15,8 @@ rust程序：`.rs`文件
 
 rust安装环境变量：`RUSTUP_HOME`、`CARGO_HOME`
 rustup镜像环境变量：`RUSTUP_DIST_SERVER`、`RUSTUP_UPDATE_ROOT`
-
+- `RUSTUP_HOME`: Rust编译工具链
+- `CARGO_HOME`:  Cargo包管理主目录
 
 要求写分号`;`
 变量支持自动类型推断、默认不可变
