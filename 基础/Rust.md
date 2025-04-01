@@ -4,11 +4,19 @@
 >`Rust官方API文档：https://doc.rust-lang.org/std/index.html`
 >`Rust官方文档：https://doc.rust-lang.org/book/`
 >
->`2023年Rust入门教程：P15`
+>`2023年Rust入门教程：P36`
 
 ## 基础介绍
 
 编译型、无GC、安全性高的系统编程语言
+- Option可空处理
+- Result异常处理
+- Future异步
+- Box智能指针
+
+
+
+
 
 
 rust程序：`.rs`文件
@@ -119,7 +127,7 @@ package:
 ```yaml
 alloc:
 core:
-proc_macro:
+proc_macro: # 过程宏
     token_stream:
     Group: # 代码段
     Ident: # 标识符
@@ -136,13 +144,15 @@ std: # 核心包
     array: # 固定大小数组
         chunks(): # 分块
         into_iter():
-        iter():
+        iter(): # 显式迭代器
+        len(): # 长度
         split():
         windows(): # 滑动窗口
     boxed:
-        Box:
+        Box: # 堆上智能指针，通过*解引用取值
+            new():
     cell:
-    cmp:
+    cmp: # 比较
         Ordering:
             Equal:
             Great:
@@ -151,18 +161,35 @@ std: # 核心包
         Entry: # 键值对
             or_insert():
         HashMap: # 哈希表
+            contains_key(): # k 存在判断
             entry():
-            get():
+            get(): # 获取元素，Option
             insert(): # 添加元素
+            iter(): # k-v迭代，元组
+            len(): # 元素个数
+            new():
+            remove(): # 移除元素，Option
+        HashSet: # 集合
+            contains():
+            get():
+            insert():
+            iter():
+            len():
             new():
             remove():
-    convert:
+    convert: # 类型转换
+        From: # from trait
+            from():
+        Into: # into trait，编译器支持自动实现
+            into():
     default:
-    env:
+    env: # 环境
+        args(): # 命令行参数
     error:
         Error:
     fmt: # 格式化
         Display: # 自定义控制台输出 trait
+            fmt():
         format(): # 字符串格式化
     fs: # 文件
         DirEntry: # 文件条目
@@ -171,9 +198,10 @@ std: # 核心包
             metadata():
             path():
         File: # 文件
-            create():
-            open():
-            read_to_string():
+            create(): # 创建文件
+            open(): # 打开文件
+            read_to_string(): # 字符串读取
+            write(): # 文件写入
             write_all():
         FileType: # 文件类型
             file_type():
@@ -197,7 +225,7 @@ std: # 核心包
         read_dir(): # 读取目录，迭代遍历 DirEntry
         read_to_string(): # 读取文件内容
         remove_dir():
-        remove_file():
+        remove_file(): # 删除文件
         rename(): # 重命名
         write(): # 文件写入
     future: # 异步结果
@@ -223,15 +251,26 @@ std: # 核心包
         Stdin: # 标准输入流
             lock():
             read_line(): # 读取一行
-        Stdout:
+        Stdout: # 标准输出流 
+            write():
         Write: # 输出流 trait
+            write_all():
         stdin(): # 获取输入流
+        stdout(): # 获取输出流
     iter: # 迭代器
         Enumerate: # 枚举 trait
-        IntoIterator: # into 迭代器 trait
+        IntoIterator: # into 迭代器 trait，for in迭代
         Iterator: # 迭代器 trait
             collect():
             enumerate():
+            iter():
+            next():
+    marker: # 原始类型
+        Copy: # 值拷贝
+        Send:
+        Sized:
+        Sync:
+        Unpin:
     mem:
         sizeof(): # 内存大小
         size_of_val(): # 变量内存大小
@@ -250,6 +289,8 @@ std: # 核心包
             recv_from():
             send_to():
     ops: # 操作定义
+        Deref: # 只读智能指针，*v
+        Drop: # 析构，Trait，Move
         Fn: # 函数
         FnMut: #
         Range: # 范围
@@ -291,14 +332,14 @@ std: # 核心包
             unwrap_or():
             unwrap_or_default():
             unwrap_or_else():
-    os:
+    os: # 操作系统
     path: # 路径
         Path:
             join():
             new():
         PathBuf:
     prelude: # 预加载模块
-    process:
+    process: # 进程
     result: # 结果
         Result: # 结果枚举、异常处理
             Err:
@@ -330,6 +371,7 @@ std: # 核心包
         len():
         to_vec():
     str: # 不可变字符串、字符串切片
+        as_bytes(): # 转为字节数组 &[u8]
         char_indices():
         chars():
         len():
@@ -362,6 +404,13 @@ std: # 核心包
             Pending:
             Ready:
     thread: # 线程
+        JoinHandle: # 线程操作
+            is_finished():
+            join():
+            thread():
+        Thread: # 线程
+            id():
+            name():
         sleep(): # 线程睡眠
         spawn(): # 开启线程
     time:
@@ -369,18 +418,19 @@ std: # 核心包
         Vec: # 动态数组
             capacity():
             clone(): # 拷贝
+            contains(): # 元素包含判断
             into_iter():
             len(): # 长度
             new():
             pop():
             push(): # 添加元素
-            remove():
+            remove(): # 根据索引移除元素
             with_capacity():
     format!(): # 字符串格式化：String
-    panic!(): # 异常抛出(宏)
+    panic!(): # 异常抛出(宏)，不可恢复
     print!():
     println!(): # 打印输出(宏)、支持字符串格式化
-    vec![]:
+    vec![]: # 创建Vec
     write!():
     writeln!():
 test: # 测试库
@@ -477,8 +527,8 @@ let arr: [i32; 4] = [1, 2, 3, 4];
 let arr = [0; 5]; // 等价于 [0, 0, 0, 0, 0]
 ```
 
-固定长度数组
-`[T; N]`、Copy 
+固定长度数组、Copy 
+`[T; N]`
 
 支持索引、for in遍历、
 
@@ -487,10 +537,13 @@ let arr = [0; 5]; // 等价于 [0, 0, 0, 0, 0]
 ```rust
 // 字面量创建
 let tup: (i32, f64, char) = (42, 3.14, 'R');
+
+tup.0
+tup.1
+tup.2
 ```
 
-元组
-Copy
+元组、Copy
 
 支持下标索引(0,1,2)、解构
 空元组 ()
@@ -531,6 +584,8 @@ let slice: &[i32] = &arr[1..4]; // 取索引 1 到 3（左闭右开）
 
 `&T`、`&mut T`：借用、可变借用
 Copy
+左闭右开
+切片、可变切片
 
 
 切片 (slice) 是对数组或 Vec 的一部分的引用，用于避免复制数据，提高性能
@@ -549,8 +604,7 @@ let v = vec![1, 2, 3]; // `v` 存在栈上，但元素 [1,2,3] 存在堆上
 
 ```
 
-动态数组
-Move
+动态数组、Move
 
 支持索引、for in遍历
 
@@ -567,6 +621,13 @@ map.insert("b", 20);
 Move
 
 支持for in遍历、
+
+
+
+#### HashSet
+
+
+集合、Move
 
 
 #### Enum
@@ -595,6 +656,7 @@ ControlFlow:
     macro_rules!: # 声明宏定义
     mut: # 可变定义
     static: # 静态变量
+    type: # 类型别名
     for ... in ...:
     if ... else if ... else ...:
     loop ...:
@@ -674,7 +736,7 @@ Statement语句最后一行的值默认为返回值
 
 不支持可变参数
 
-#### Closures
+#### Closure
 ```rust
 let add = |a: i32, b: i32| a + b; // 定义一个闭包
 println!("5 + 3 = {}", add(5, 3));
@@ -684,6 +746,10 @@ println!("5 + 3 = {}", add(5, 3));
 
 
 
+#### Generic
+
+
+泛型
 
 
 
@@ -798,6 +864,12 @@ trait Bird: Animal + CanFly {  // Bird 继承自 Animal 和 CanFly
 默认值
 
 
+##### Display
+
+
+字符串打印
+
+
 ##### Eq
 
 相等判断
@@ -809,6 +881,11 @@ trait Bird: Animal + CanFly {  // Bird 继承自 Animal 和 CanFly
 ##### Into
 
 类型转换
+
+##### IntoIterator
+
+for in 迭代遍历
+
 
 ##### Iterator
 
@@ -822,7 +899,9 @@ trait Bird: Animal + CanFly {  // Bird 继承自 Animal 和 CanFly
 
 
 
+#### Generic
 
+泛型
 
 
 
@@ -843,6 +922,15 @@ Copy trait、Drop trait
 `&mut`在特定作用域内，对某一块数据只能有一个可变引用；不可以同时拥有一个可变引用和一个不可变引用
 
 `Danling Reference`悬空引用：编译器保证引用永远都不是悬空的
+
+
+
+#### Borrow
+
+
+借用，不会发生Move
+不可变借用`&`、可变借用`&mut`
+
 
 
 #### Move
