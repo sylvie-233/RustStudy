@@ -4,7 +4,7 @@
 >`Rust官方API文档：https://doc.rust-lang.org/std/index.html`
 >`Rust官方文档：https://doc.rust-lang.org/book/`
 >
->`2023年Rust入门教程：P36`
+>``
 
 ## 基础介绍
 
@@ -655,8 +655,10 @@ ControlFlow:
     let: # 变量定义
     macro_rules!: # 声明宏定义
     mut: # 可变定义
+    ref: # 引用&
     static: # 静态变量
     type: # 类型别名
+    where: # 泛型限定
     for ... in ...:
     if ... else if ... else ...:
     loop ...:
@@ -750,6 +752,7 @@ println!("5 + 3 = {}", add(5, 3));
 
 
 泛型
+where泛型限定
 
 
 
