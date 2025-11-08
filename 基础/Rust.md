@@ -4,7 +4,7 @@
 >`Rust官方API文档：https://doc.rust-lang.org/std/index.html`
 >`Rust官方文档：https://doc.rust-lang.org/book/`
 >
->`2023年Rust入门教程：P15`
+>`Rust 编程语言教程 with RustRover：29`
 
 ## 基础介绍
 
@@ -14,12 +14,14 @@
 rust程序：`.rs`文件
 
 rust安装环境变量：`RUSTUP_HOME`、`CARGO_HOME`
-rustup镜像环境变量：`RUSTUP_DIST_SERVER`、`RUSTUP_UPDATE_ROOT`
 - `RUSTUP_HOME`: Rust编译工具链
 - `CARGO_HOME`:  Cargo包管理主目录
+rustup镜像环境变量：`RUSTUP_DIST_SERVER`、`RUSTUP_UPDATE_ROOT`
 
 要求写分号`;`
 变量支持自动类型推断、默认不可变
+
+- cargo添加的依赖存放在`%CARGO_HOME%/registry`下
 
 
 
@@ -94,7 +96,7 @@ cargo:
 
 rust包管理工具
 
-cargo添加的依赖存放在`%CARGO_HOME%/registry`下
+
 
 
 
@@ -134,30 +136,52 @@ std: # 核心包
     alloc:
     any:
     array:
+    borrow:
+        ToOwned:
     boxed:
-        Box:
+        Box: # 智能指针
     cell:
-    cmp:
+    clone:
+        Clone:
+    cmp: # 比较
+        Eq:
+        Ord:
         Ordering:
             Equal:
             Great:
             Less:
+        PartialEq:
+        PartialOrd:
     collections: # 集合
+        BinaryHeap:
+        BTreeMap:
+        BTreeSet:
         HashMap: # 哈希表
-            insert():
+            entry():
+            insert(): # 添加元素
             new():
-        Vec: # 
-            new():
-    convert:
+        HashSet:
+        LinkedList:
+        VecDeque:
+    convert: # 转换
+        AsRef:
+        AsMut:
+        Into:
+        From:
     default:
+        Default:
     env:
     error:
     fmt:
         format(): # 字符串格式化
-    fs:
-    future:
+    fs:  # 文件系统
+        File:
+    future: 
+        Future:
     hash:
-    io:
+    io: # 输入输出
+        Error:
+            kind():
         Result:
             expect(): # 打印异常细腻些
             is_ok():
@@ -167,18 +191,40 @@ std: # 核心包
         Stdin:
             read_line():
         stdin(): # 获取输入流
-    iter:
-    mem:
+    iter: # 迭代器
+        DoubleEndedIterator:
+        ExactSizeIterator:
+        Extend:
+        IntoIterator: 
+        Iterator:
+    marker:
+        Copy:
+        Send:
+        Sized:
+        Sync:
+        Unpin:
+    mem: # 内存
+        align_of():
+        align_of_val():
+        drop():
         sizeof(): # 内存大小
         size_of_val(): # 变量内存大小
     net:
     ops:
+        AsyncFn:
+        AsyncFnMut:
+        AsyncFnOnce:
+        Drop:
+        Fn:
+        FnMut:
+        FnOnce:
         Range: # 范围
             enumerate(): # 带索引遍历
     option: # 可空
         Option: # 可空枚举
             None:
             Some(T): # 有值
+            unwrap():
     os:
     path:
     prelude: # 预加载模块
@@ -188,7 +234,7 @@ std: # 核心包
             Err(E):
             Ok(T):
             is_ok():
-    slice:
+    slice: # 切片
     str: # 不可变字符串、字符串切片
         char_indices():
         chars():
@@ -199,6 +245,8 @@ std: # 核心包
     string: # 字符串
         String: # 可变字符串(引用类型)
             as_str():
+            bytes(): # 转换为字节数组
+            chars(): # 转换为字符数组
             clone():
             cmp(): # 字符串比较
             from(): # 根据字符串常量创建字符串
@@ -208,13 +256,15 @@ std: # 核心包
             push(): # 添加字符
             push_str(): # 添加字符串
             trim():
+        ToString():
     sync:
     task:
     thread:
     time:
-    vec:
-        Vec:
+    vec: # 向量
+        Vec:  
             append():
+            get(): # 索引获取
             into_iter():
             iter(): # 迭代器
             iter_mut():
@@ -271,7 +321,7 @@ const声明不允许重复声明
 
 
 
-#### Str
+#### str
 
 &str 是不可变的字符串切片，是对 String 或字面量字符串的引用
 
@@ -356,6 +406,9 @@ String与&str都是指向str的指针，String包含：指针、长度、容量�
 引用类型Move
 
 
+#### HashSet
+
+
 #### Enum
 ```rust
 enum Color {
@@ -381,7 +434,7 @@ ControlFlow:
     let: # 变量定义
     mut: # 可变定义
     static: # 静态变量
-    for ... in ...:
+    for ... in ...: # 迭代遍历
     if ... else if ... else ...:
     loop ...:
     match ...:
@@ -400,7 +453,7 @@ Result解决了一部分异常处理的逻辑
 
 
 
-#### match
+#### Match
 ```rust
 
 ```
@@ -411,10 +464,21 @@ match通常和枚举一块使用
 
 
 
+#### Option
+
+可空处理
 
 
+#### Exception Handle
 
-#### exception
+异常处理
+`Result`
+
+##### Result
+
+`?`运算符
+
+##### Panic
 
 
 
@@ -429,7 +493,12 @@ match通常和枚举一块使用
 Statement语句最后一行的值默认为返回值
 
 
-#### async
+#### Generic
+
+泛型
+
+
+#### Async
 
 异步函数
 
@@ -479,12 +548,15 @@ struct Color(i32, i32, i32);
 
 
 
-#### trait
+#### Trait
 
 特质、类似其它语言的接口
 
 
 
+#### Generic
+
+泛型
 
 
 
@@ -494,6 +566,8 @@ struct Color(i32, i32, i32);
 
 
 
+
+### Generic
 
 ### Ownership
 
@@ -524,14 +598,16 @@ Copy trait、Drop trait
 
 #### Lifetime
 
+引用有效的范围（作用域Scope）
+变量引用生命周期，生命周期的主要作用是**避免悬垂引用**
+泛型生命周期参数
+
 - &`static
-
-变量生命周期，生命周期的主要作用是**避免悬垂引用**
-
 生命周期标注通常是用在引用类型上的``&`a mut i32``
 
 
 实际生命周期要大于等于声明的生命周期
+
 
 在函数返回值有多个不同生命周期的的时候，要求返回类型是所有返回值中生命周期最小的那个
 
@@ -547,13 +623,18 @@ struct自己的生命周期可以比属性引用的生命周期短
 
 
 
-
-### Smart Pointer
-
+#### Smart Pointer
 
 
 
-### Generic
+##### Box
+
+`unique_ptr`
+
+
+
+
+
 
 
 
@@ -570,7 +651,7 @@ mod mod_name {
 
 Package->Crate->Module
 
-
+`mod.rs`默认模块文件
 模块默认是私有的，公共需标明`pub`
 
 `use`使用模块中的东西，使用`as`定义别名
@@ -594,10 +675,9 @@ Crate类型：
 Attribute:
     allow:
         non_camel_case_types:
-    cfg:
-        条件编译
+    cfg: # 条件编译
     cold:
-    derive: 自动实现trait(可用于struct或枚举)
+    derive: # 自动实现trait(可用于struct或枚举)
         Debug:
         Clone:
         Copy:
@@ -607,9 +687,9 @@ Attribute:
         kind:
         name:
     macro_use:
-    main: 主函数
+    main: # 主函数
     plugin_registrar:
-    proc_macro: 定义宏函数
+    proc_macro: # 定义宏函数
     proc_macro_attribute:
     should_panic:
     start:
@@ -656,7 +736,8 @@ Rust宏：声明宏、过程宏
 
 ### Test
 
-
+测试
+`#[cfg(test)]`、`#[test]`
 
 
 
