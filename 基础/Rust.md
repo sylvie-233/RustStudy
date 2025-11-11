@@ -4,7 +4,7 @@
 >`Rust官方API文档：https://doc.rust-lang.org/std/index.html`
 >`Rust官方文档：https://doc.rust-lang.org/book/`
 >
->`Rust 编程语言教程 with RustRover：29`
+>`Rust 编程语言教程 with RustRover：43`
 
 ## 基础介绍
 
@@ -26,6 +26,7 @@ rustup镜像环境变量：`RUSTUP_DIST_SERVER`、`RUSTUP_UPDATE_ROOT`
 变量支持自动类型推断、默认不可变
 
 - cargo添加的依赖存放在`%CARGO_HOME%/registry`下
+- dyn Trait 不能自动推断大小，所以必须放在堆上、智能指针中
 
 
 
@@ -94,6 +95,7 @@ cargo:
     remove: # 移除包
     run: # 运行
     test: # 运行测试代码
+        --ignored:
     uninstall:
     update: # 更新包
 ```
@@ -135,6 +137,7 @@ proc_macro: # 过程宏
         default():
         from():
         read_to_string():
+        to_string():
     TokenTree:
 std: # 核心包
     alloc:
@@ -189,15 +192,16 @@ std: # 核心包
         From:
     default:
         Default:
-    env: # 环境
-        args(): # 命令行参数
+    env: # 环境变量
+        args(): # 命令行参数 Iterator
+        var(): # 环境变量
     error:
         Error:
     fmt: # 格式化
         Display: # 自定义控制台输出 trait
             fmt():
         format(): # 字符串格式化
-    fs: # 文件
+    fs: # 文件系统
         DirEntry: # 文件条目
             file_name():
             file_type():
@@ -229,7 +233,7 @@ std: # 核心包
         metadata(): # 获取文件元信息
         read(): # 读取字节数据: Vec<u8>
         read_dir(): # 读取目录，迭代遍历 DirEntry
-        read_to_string(): # 读取文件内容
+        read_to_string(): # 读取文件内容 Result<String>
         remove_dir():
         remove_file(): # 删除文件
         rename(): # 重命名
@@ -294,15 +298,13 @@ std: # 核心包
             bind():
             recv_from():
             send_to():
-    ops: # 操作定义
-        Deref: # 只读智能指针，*v
-        Drop: # 析构，Trait，Move
-        Fn: # 函数
-        FnMut: #
+    ops: # 运算符操作定义 Trait
+        Add:
         AsyncFn:
         AsyncFnMut:
         AsyncFnOnce:
-        Drop:
+        Deref: # 只读智能指针，*v
+        Drop: # 析构，Trait，Move
         Fn:
         FnMut:
         FnOnce:
@@ -353,6 +355,12 @@ std: # 核心包
         PathBuf:
     prelude: # 预加载模块
     process: # 进程
+        exit(): # 结束进程
+    rc: # 引用计数指针
+        Rc: # 引用计数指针
+            clone():
+            new():
+            strong_count():
     result: # 结果
         Result: # 结果枚举、异常处理
             Err:
@@ -370,7 +378,9 @@ std: # 核心包
         as_bytes(): # 转为字节数组 &[u8]
         char_indices():
         chars():
+        contains(): # 字符串包含
         len():
+        lines(): # 多行遍历
         parse():
         split():
         to_string(): # 转换为字符串
@@ -391,12 +401,19 @@ std: # 核心包
             push_str(): # 添加字符串
             trim():
     sync: # 同步
-        atomic:
+        atomic: # 原子
             AtomicUsize:
             Ordering:
-        Arc:
-        Mutex:
-            lock():
+        mpsc: # 通道
+            channel(): # 通道
+                tx: # 生产者
+                    clone():
+                rx: # 消费者
+                    recv():
+                    try_recv():
+        Arc: # 原子引用
+        Mutex: # 互斥锁
+            lock(): # 加锁
     task: # 任务
         Poll:
             Pending:
@@ -410,8 +427,9 @@ std: # 核心包
             id():
             name():
         sleep(): # 线程睡眠
-        spawn(): # 开启线程
-    time:
+        spawn(): # 开启线程 JoinHandle
+    time: # 时间
+        Duration:
     vec: # 动态数组
         Vec: # 动态数组
             capacity():
@@ -649,10 +667,12 @@ ControlFlow:
     where: # 泛型限定
     for ... in ...: # 迭代遍历
     if ... else if ... else ...:
-    loop ...:
+        let: # 条件模式匹配（Struct、Tuple、Enum）
+    loop ...: # 死循环
     match ...:
     unsafe ...: 
     while ...:
+        let: # 循环模式匹配
         break:
         continue:
 ```
@@ -661,7 +681,14 @@ Result解决了一部分异常处理的逻辑
 
 
 
+#### Type
 
+类型别名
+
+##### Never Type
+
+永不返回的类型
+!
 
 
 
@@ -699,7 +726,9 @@ match通常和枚举(Option、Result)一块使用
 ##### Panic
 
 
+#### Iterator
 
+迭代器
 
 
 ### Function
@@ -711,6 +740,10 @@ match通常和枚举(Option、Result)一块使用
 Statement语句最后一行的值默认为返回值
 
 不支持可变参数
+
+#### Function Pointer
+
+函数指针
 
 #### Closure
 ```rust
@@ -733,6 +766,11 @@ where泛型限定
 
 
 异步函数
+
+
+##### Future
+
+##### Pin
 
 
 
@@ -811,9 +849,25 @@ trait Bird: Animal + CanFly {  // Bird 继承自 Animal 和 CanFly
 ```
 特质、类似其它语言的接口
 
-
 常用于泛型约束、实现结构体的魔术方法
 支持默认实现、
+
+##### impl Trait
+
+常用于返回值限定
+
+##### dyn Trait
+
+表示在运行时通过 trait 对象进行动态分发的类型
+某个在运行时才能确定具体类型的对象，这个对象实现了 Trait
+动态派发靠一个虚表（vtable）来工作
+- 存放每个实现的方法指针
+- 对象存储一个「数据指针」+「虚表指针」
+
+
+##### type
+
+关联类型、类似泛型功能
 
 
 ##### AsMut
@@ -833,6 +887,9 @@ trait Bird: Animal + CanFly {  // Bird 继承自 Animal 和 CanFly
 调试输出
 
 ##### Deref
+
+解引用
+
 ##### DerefMut
 
 ##### Drop
@@ -864,7 +921,7 @@ trait Bird: Animal + CanFly {  // Bird 继承自 Animal 和 CanFly
 
 ##### IntoIterator
 
-for in 迭代遍历
+获取所有权，迭代遍历
 
 
 ##### Iterator
@@ -877,7 +934,7 @@ for in 迭代遍历
 
 ##### Sized
 
-
+动态大小类型
 
 #### Generic
 
@@ -909,8 +966,17 @@ Copy trait、Drop trait
 #### Borrow
 
 
-借用，不会发生Move
+引用/借用，不会发生Move
 不可变借用`&`、可变借用`&mut`
+
+##### Ref
+
+引用
+
+##### RefMut
+
+可变引用
+
 
 
 
@@ -966,24 +1032,6 @@ struct Book<'a> {
 #### Smart Pointer
 
 
-
-
-##### Box
-
-单所有权，堆分配
-
-
-##### Arc
-##### Rc
-```rust
-let a = Rc::new(5);
-let b = Rc::clone(&a);
-
-println!("a: {}, b: {}", a, b);
-```
-
-共享所有权，引用计数
-
 ##### RefCell
 ```rust
 let x = RefCell::new(5);
@@ -994,15 +1042,42 @@ let mut y = x.borrow_mut();
 println!("Value: {}", x.borrow());
 ```
 
+独享所有权
 内部可变性的智能指针，它们使得你能够在不改变所有权的情况下修改数据
 
-##### Mutex
 
-##### Cow
+##### Box
+
+独享所有权，堆分配
+- Deref：支持*解引用
+- Drop：析构函数
+
+
+
+##### Rc
 ```rust
+let a = Rc::new(5);
+let b = Rc::clone(&a);
+
+println!("a: {}, b: {}", a, b);
 ```
 
-写时复制，优化不需要修改的数据
+共享所有权，引用计数
+
+
+
+##### Weak
+
+弱引用
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1038,20 +1113,39 @@ Crate类型：
 
 
 
+#### WorkSpace
+
+工作空间
+
 
 ### Attribute
 ```yaml
 Attribute:
-    allow:
+    allow/warn/deny/forbid: # 控制编译警告
+        dead_code:
         non_camel_case_types:
+        non_snake_case:
+        unused_variables:
     cfg: # 条件编译
+        debug_assertions:
+        feature:
+        not:
+        target_arch:
+        target_os:
+        test: # 声明测试
+    cfg_attr: # 条件属性
+        debug_assertions:
     cold:
-    derive: 自动实现trait(可用于struct或枚举)
-        Debug:
+    derive: # 自动实现trait(可用于struct或枚举)
         Clone:
         Copy:
         Debug:
+        Default:
+        Hash:
+        Eq:
+        Ord:
         PartialEq:
+        PartialOrd:
     feature:
         box_syntax:
     inline: # 函数内联
@@ -1059,42 +1153,59 @@ Attribute:
     link:
         kind:
         name:
-    macro_use: # 引入crate模块中的宏
+    macro_use: # 引入crate模块中的宏(老语法)
     main: # 主函数
     must_use:
     no_mangle:
     non_exhaustive:
     panic_handler:
+    path: # 指定模块路径
     plugin_registrar:
     proc_macro: # 定义宏函数
     proc_macro_attribute:
     repr: # 内存布局控制
+        C:
     should_panic:
     start:
     test: # 测试函数标记
     unstable:
-    warn:
 ```
+
 
 注解元数据
 `#[attr]`
 
+- 外部属性 (Outer Attribute)：`#[...]`
+- 内部属性 (Inner Attribute)：`#![...]`、作用于整个 crate
 
 
 
 ### Macro
 ```yaml
 macro:
+    macro_rules!:
+        $()*: # 可重复匹配
+        block: # 代码块
+        expr: # 表达式
+        ident: # 标识符
+        pat: # 模式
+        path: # 路径（如 std::io）
+        tt: # 任意 token 
+        ty: # 类型
 ```
 
 ![Rust编译过程](../assets/Rust编译过程.png)
 
 Rust宏：
-- 声明宏: 类似原始c++宏
-- 过程宏: 自定义代码token流处理
+- 声明宏: 类似原始c++宏、使用 macro_rules!
+- 过程宏: 自定义代码token流处理、自定义属性、派生、函数宏等
     - 派生宏: 自动为结构体或枚举生成trait实现
     - 属性宏: 可以用于自定义属性
     - 函数宏:
+
+常用第三方依赖：
+- sync：token stream解析ast
+- quote：ast解析token stream
 
 
 
@@ -1154,6 +1265,9 @@ pub fn hello_world_macro(input: TokenStream) -> TokenStream {
 struct TestStruct;
 ```
 
+派生宏（derive）
+自动为结构体/枚举生成 trait 实现
+
 
 
 
@@ -1174,7 +1288,8 @@ fn my_function() {
 }
 ```
 
-
+属性宏（attribute）
+定义新属性修饰项
 属性宏允许你为函数、结构体、模块等自定义属性处理
 
 
@@ -1192,7 +1307,8 @@ my_macro!(Hello, World!);
 ```
 
 
-
+函数宏（function-like）
+像函数调用一样
 
 
 
@@ -1211,19 +1327,56 @@ my_macro!(Hello, World!);
 
 ### Concurrency
 
+#### Thread
+
+多线程
+
+##### Send
+
+所有权可以在线程之间转移
+
+
+##### Sync
+
+可以安全地从多个线程引用实现该trait的类型
+
+
+#### Mutex
+
+互斥锁
+
+##### MutexGuard
 
 
 
 
 
+#### Atomic
 
+##### Arc
+
+原子引用计数
+
+#### Channel
+
+通道
+mpsc模块（多个生产者一个消费者）
 
 
 ### Unsafe
 
 
+#### Raw
+
+原始指针
+- &raw const：不可变原始指针
+- &raw mut：可变原始指针
 
 
+#### Unsafe Function
+#### Unsafe Trait
 
+#### Unsafe Extern
 
+外部函数接口FFI
 

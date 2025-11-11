@@ -37,8 +37,8 @@ tokio:
             from_secs():
         sleep(): # 协程睡眠
         timeout(): # 超时
-    @main: # attr
-    @test: # test
+    [main]: # attr
+    [test]: # test
     join!(): # 所有任务等待
     select!():
     spawn():
